@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "title": "Carburador VW Escarabajo",
+    "description": "Carburador original para modelos 1960-1979",
+    "price": 160,
+    "thumbnail": "carburador.jpg",
+    "code": "CARB001",
+    "stock": 8
+  },
+  {
+    "id": 3,
+    "title": "Bujías NGK",
+    "description": "Juego de 4 bujías para VW Escarabajo",
+    "price": 20,
+    "thumbnail": "bujias.jpg",
+    "code": "BUJ003",
+    "stock": 20
+  }
+]
