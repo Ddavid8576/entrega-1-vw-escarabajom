@@ -1,0 +1,33 @@
+<!-- views/index.handlebars -->
+<h1>Repuestos VW Escarabajo</h1>
+<ul>
+    {{#each products}}
+        <li>
+            <strong>{{this.title}}</strong><br>
+            Precio: ${{this.price}}<br>
+            <a href="/products/{{this._id}}">Ver Detalles</a>
+            <button onclick="addToCart('{{this._id}}')">Agregar al Carrito</button>
+        </li>
+    {{/each}}
+</ul>
+<div>
+    {{#if hasPrevPage}}
+        <a href="{{prevLink}}">Página Anterior</a>
+    {{/if}}
+    Página {{page}} de {{totalPages}}
+    {{#if hasNextPage}}
+        <a href="{{nextLink}}">Página Siguiente</a>
+    {{/if}}
+</div>
+<script>
+    async function addToCart(pid) {
+        try {
+            const response = await fetch('/api/carts', { method: 'POST' });
+            const cart = await response.json();
+            await fetch(`/api/carts/${cart.payload._id}/products/${pid}`, { method: 'POST' });
+            alert('Producto agregado al carrito');
+        } catch (error) {
+            alert('Error al agregar al carrito');
+        }
+    }
+</script>

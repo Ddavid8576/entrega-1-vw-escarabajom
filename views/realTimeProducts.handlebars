@@ -1,13 +1,14 @@
+<!-- views/realTimeProducts.handlebars -->
 <h1>Repuestos VW Escarabajo (Tiempo Real)</h1>
 <ul id="productList">
     {{#each products}}
-        <li data-id="{{this.id}}">
+        <li data-id="{{this._id}}">
             <strong>{{this.title}}</strong><br>
             Descripción: {{this.description}}<br>
             Precio: ${{this.price}}<br>
             Código: {{this.code}}<br>
             Stock: {{this.stock}}
-            <button onclick="deleteProduct({{this.id}})">Eliminar</button>
+            <button onclick="deleteProduct('{{this._id}}')">Eliminar</button>
         </li>
     {{/each}}
 </ul>
@@ -20,6 +21,7 @@
     <input type="text" id="thumbnail" placeholder="Imagen" required><br>
     <input type="text" id="code" placeholder="Código" required><br>
     <input type="number" id="stock" placeholder="Stock" required><br>
+    <input type="text" id="category" placeholder="Categoría" required><br>
     <button type="submit">Agregar Producto</button>
 </form>
 
@@ -27,31 +29,28 @@
 <script>
     const socket = io();
 
-    // Manejar actualización de productos
     socket.on('updateProducts', (products) => {
         const productList = document.getElementById('productList');
         productList.innerHTML = '';
         products.forEach(product => {
             const li = document.createElement('li');
-            li.setAttribute('data-id', product.id);
+            li.setAttribute('data-id', product._id);
             li.innerHTML = `
                 <strong>${product.title}</strong><br>
                 Descripción: ${product.description}<br>
                 Precio: $${product.price}<br>
                 Código: ${product.code}<br>
                 Stock: ${product.stock}
-                <button onclick="deleteProduct(${product.id})">Eliminar</button>
+                <button onclick="deleteProduct('${product._id}')">Eliminar</button>
             `;
             productList.appendChild(li);
         });
     });
 
-    // Manejar errores
     socket.on('error', (message) => {
         alert(message);
     });
 
-    // Enviar nuevo producto
     document.getElementById('addProductForm').addEventListener('submit', (e) => {
         e.preventDefault();
         const product = {
@@ -60,13 +59,13 @@
             price: parseFloat(document.getElementById('price').value),
             thumbnail: document.getElementById('thumbnail').value,
             code: document.getElementById('code').value,
-            stock: parseInt(document.getElementById('stock').value)
+            stock: parseInt(document.getElementById('stock').value),
+            category: document.getElementById('category').value
         };
         socket.emit('addProduct', product);
-        e.target.reset(); // Limpiar formulario
+        e.target.reset();
     });
 
-    // Función para eliminar producto
     function deleteProduct(id) {
         socket.emit('deleteProduct', id);
     }

@@ -1,25 +1,46 @@
-const FileManager = require('./FileManager');
+// ProductManager.js
+const Product = require('./models/Product');
 
 class ProductManager {
-    constructor() {
-        this.fileManager = new FileManager('products.json');
-    }
-
-    // Lista todos los productos
-    async getProducts() {
+    // Lista productos con filtros, paginación y ordenamiento
+    async getProducts({ limit = 10, page = 1, sort, query } = {}) {
         try {
-            return await this.fileManager.readFile();
+            let filter = {};
+            if (query) {
+                if (query.category) filter.category = query.category;
+                if (query.status !== undefined) filter.status = query.status;
+            }
+
+            const options = {
+                limit: parseInt(limit),
+                page: parseInt(page),
+                sort: sort ? { price: sort === 'asc' ? 1 : -1 } : undefined
+            };
+
+            const result = await Product.paginate(filter, options);
+
+            return {
+                status: 'success',
+                payload: result.docs,
+                totalPages: result.totalPages,
+                prevPage: result.prevPage,
+                nextPage: result.nextPage,
+                page: result.page,
+                hasPrevPage: result.hasPrevPage,
+                hasNextPage: result.hasNextPage,
+                prevLink: result.hasPrevPage ? `/api/products?limit=${limit}&page=${result.prevPage}${sort ? `&sort=${sort}` : ''}${query ? `&query=${JSON.stringify(query)}` : ''}` : null,
+                nextLink: result.hasNextPage ? `/api/products?limit=${limit}&page=${result.nextPage}${sort ? `&sort=${sort}` : ''}${query ? `&query=${JSON.stringify(query)}` : ''}` : null
+            };
         } catch (error) {
             console.error('Error al obtener productos:', error);
-            return [];
+            return { status: 'error', payload: [], totalPages: 0, page: 1 };
         }
     }
 
     // Busca un producto por ID
     async getProductById(pid) {
         try {
-            const products = await this.fileManager.readFile();
-            const product = products.find(p => p.id === pid);
+            const product = await Product.findById(pid);
             if (!product) {
                 console.log('Producto no encontrado');
                 return null;
@@ -34,75 +55,45 @@ class ProductManager {
     // Agrega un nuevo producto
     async addProduct(product) {
         try {
-            const products = await this.fileManager.readFile();
-
-            // Verifica si el código ya existe
-            if (products.some(p => p.code === product.code)) {
-                console.log('Error: El código ya existe');
-                return;
-            }
-
-            // Genera un nuevo ID
-            const newId = products.length > 0 ? products[products.length - 1].id + 1 : 1;
-
-            const newProduct = {
-                id: newId,
-                title: product.title,
-                description: product.description,
-                price: product.price,
-                thumbnail: product.thumbnail,
-                code: product.code,
-                stock: product.stock
-            };
-
-            products.push(newProduct);
-            await this.fileManager.writeFile(products);
+            const newProduct = new Product(product);
+            await newProduct.save();
             console.log('Producto agregado:', newProduct.title);
+            return newProduct;
         } catch (error) {
             console.error('Error al agregar producto:', error);
+            throw error;
         }
     }
 
     // Actualiza un producto
     async updateProduct(pid, updateFields) {
         try {
-            const products = await this.fileManager.readFile();
-            const productIndex = products.findIndex(p => p.id === pid);
-
-            if (productIndex === -1) {
+            const product = await Product.findByIdAndUpdate(pid, updateFields, { new: true });
+            if (!product) {
                 console.log('Producto no encontrado para actualizar');
-                return;
+                return null;
             }
-
-            products[productIndex] = {
-                ...products[productIndex],
-                ...updateFields,
-                id: products[productIndex].id
-            };
-
-            await this.fileManager.writeFile(products);
             console.log('Producto actualizado');
+            return product;
         } catch (error) {
             console.error('Error al actualizar producto:', error);
+            throw error;
         }
     }
 
     // Elimina un producto
     async deleteProduct(pid) {
         try {
-            const products = await this.fileManager.readFile();
-            const productIndex = products.findIndex(p => p.id === pid);
-
-            if (productIndex === -1) {
+            const product = await Product.findByIdAndDelete(pid);
+            if (!product) {
                 console.log('Producto no encontrado para eliminar');
-                return;
+                return null;
             }
-
-            products.splice(productIndex, 1);
-            await this.fileManager.writeFile(products);
             console.log('Producto eliminado');
+            return product;
         } catch (error) {
             console.error('Error al eliminar producto:', error);
+            throw error;
         }
     }
 }
