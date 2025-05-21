@@ -73,4 +73,8 @@ Las vistas incluyen botones para agregar al carrito y enlaces para detalles.
    git clone https://github.com/tu-usuario/proyecto-escarabajo.git
 
 ## Uso
+HEAD
 node server.js
+
+
+
