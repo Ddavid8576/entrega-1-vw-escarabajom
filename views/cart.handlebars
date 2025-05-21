@@ -1,23 +1,24 @@
 <!-- views/cart.handlebars -->
-<h1>Carrito ID: {{cart._id}}</h1>
-<ul>
-    {{#each cart.products}}
-        <li>
-            <strong>{{this.product.title}}</strong><br>
-            Precio: ${{this.product.price}}<br>
-            Cantidad: {{this.quantity}}<br>
-            <button onclick="removeFromCart('{{../cart._id}}', '{{this.product._id}}')">Eliminar</button>
-        </li>
-    {{/each}}
-</ul>
-<a href="/products">Volver</a>
-<script>
-    async function removeFromCart(cid, pid) {
-        try {
-            await fetch(`/api/carts/${cid}/products/${pid}`, { method: 'DELETE' });
-            window.location.reload();
-        } catch (error) {
-            alert('Error al eliminar producto');
-        }
-    }
-</script>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Carrito</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <h1>Carrito</h1>
+    {{#if cart.products}}
+        {{#each cart.products}}
+            <div>
+                <h3>{{this.product.title}}</h3>
+                <p>Precio: ${{this.product.price}}</p>
+                <p>Cantidad: {{this.quantity}}</p>
+            </div>
+        {{/each}}
+    {{else}}
+        <p>El carrito está vacío</p>
+    {{/if}}
+    <a href="/products">Volver</a>
+</body>
+</html>

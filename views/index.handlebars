@@ -1,33 +1,37 @@
 <!-- views/index.handlebars -->
-<h1>Repuestos VW Escarabajo</h1>
-<ul>
-    {{#each products}}
-        <li>
-            <strong>{{this.title}}</strong><br>
-            Precio: ${{this.price}}<br>
-            <a href="/products/{{this._id}}">Ver Detalles</a>
-            <button onclick="addToCart('{{this._id}}')">Agregar al Carrito</button>
-        </li>
-    {{/each}}
-</ul>
-<div>
-    {{#if hasPrevPage}}
-        <a href="{{prevLink}}">Página Anterior</a>
-    {{/if}}
-    Página {{page}} de {{totalPages}}
-    {{#if hasNextPage}}
-        <a href="{{nextLink}}">Página Siguiente</a>
-    {{/if}}
-</div>
-<script>
-    async function addToCart(pid) {
-        try {
-            const response = await fetch('/api/carts', { method: 'POST' });
-            const cart = await response.json();
-            await fetch(`/api/carts/${cart.payload._id}/products/${pid}`, { method: 'POST' });
-            alert('Producto agregado al carrito');
-        } catch (error) {
-            alert('Error al agregar al carrito');
-        }
-    }
-</script>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Repuestos VW Escarabajo</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/js/main.js"></script>
+</head>
+<body>
+    <h1>Repuestos VW Escarabajo</h1>
+    <div>
+        {{#each products}}
+            <div>
+                <h3>{{this.title}}</h3>
+                <p>Descripción: {{this.description}}</p>
+                <p>Precio: ${{this.price}}</p>
+                <p>Código: {{this.code}}</p>
+                <p>Stock: {{this.stock}}</p>
+                <a href="/products/{{this._id}}">Ver Detalles</a>
+                <button onclick="addToCart('{{this._id}}')">Agregar al Carrito</button>
+            </div>
+        {{else}}
+            <p>No hay productos disponibles</p>
+        {{/each}}
+    </div>
+    <div>
+        {{#if hasPrevPage}}
+            <a href="/products?page={{prevPage}}">Página Anterior</a>
+        {{/if}}
+        <span>Página {{page}} de {{totalPages}}</span>
+        {{#if hasNextPage}}
+            <a href="/products?page={{nextPage}}">Página Siguiente</a>
+        {{/if}}
+    </div>
+</body>
+</html>
