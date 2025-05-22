@@ -1,6 +1,7 @@
 # Proyecto Escarabajo - Gestión de Repuestos VW Escarabajo
 
 Este proyecto es parte del curso de Backend, diseñado para gestionar repuestos de autos VW Escarabajo usando Node.js, MongoDB, Express, Handlebars, y WebSockets.
+
 Entrega Final: MongoDB y APIs Avanzadas
 Descripción
 Actualiza la persistencia a MongoDB, implementa endpoints avanzados para productos y carritos, y mejora las vistas con paginación y detalles.
@@ -73,7 +74,6 @@ Las vistas incluyen botones para agregar al carrito y enlaces para detalles.
    git clone https://github.com/tu-usuario/proyecto-escarabajo.git
 
 ## Uso
-HEAD
 node server.js
 
 
